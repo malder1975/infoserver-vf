@@ -70,9 +70,76 @@
 </template>
 
 <script>
+    import { library } from '@fortawesome/fontawesome-svg-core'
+    import { faSpinner, faSearch  as fasSearch } from "@fortawesome/free-solid-svg-icons"
+    import { fas } from '@fortawesome/free-solid-svg-icons'
+    import { fab, faPeriscope as fabPeriscope } from '@fortawesome/free-brands-svg-icons'
+    library.add(faSpinner, fasSearch, fabPeriscope , fas, fab)
     import WeatherWidget from "../components/Weathe/WeatherWidget"
+    import { defaultGeoLoc, geolocOptions, menuHiddenBreakpoint } from '../vars/index'
+    import { mapGetters, mapMutations, mapActions } from 'vuex'
+    import { MenuIcon, MobileMenuIcon } from '../components/svg'
     export default {
-        name: "TopNav"
+        components: {
+            MenuIcon,
+            MobileMenuIcon,
+
+            WeatherWidget
+        },
+        data() {
+            return {
+                selectedParentMenu: '',
+                searchKeyword: '',
+                isMobileSearch: false,
+                isSearchOver: false,
+                menuHiddenBreakpoint,
+                defaultGeoLoc,
+                geolocOptions,
+            }
+        },
+        methods: {
+            ...mapMutations(['changeSideMenuStatus', 'changeSideMenuForMobile']),
+            search() {
+                this.searchKeyword = ''
+            },
+            searchClick() {
+                if (window.innerWidth < this.menuHiddenBreakpoint) {
+                    if (!this.isMobileSearch) {
+                        this.isMobileSearch = true
+                    } else {
+                        this.search()
+                        this.isMobileSearch = false
+                    }
+                } else {
+                    this.search()
+                }
+            },
+            handleDocumentforMobileSearch() {
+                if (this.isSearchOver) {
+                    this.isMobileSearch = false
+                    this.searchKeyword = ''
+                }
+            },
+
+        },
+        computed: {
+            ...mapGetters({
+                menuType: 'getMenuType',
+                menuClickCount: 'getMenuClickCount'
+            })
+        },
+        beforeDestroy() {
+            document.removeEventListener('click', this.handleDocumentforMobileSearch)
+        },
+        watch: {
+            isMobileSearch(val) {
+                if (val) {
+                    document.addEventListener('click', this.handleDocumentforMobileSearch)
+                } else {
+                    document.removeEventListener('click', this.handleDocumentforMobileSearch)
+                }
+            }
+        }
     }
 </script>
 

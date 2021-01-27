@@ -2,7 +2,7 @@
     <div>
         <b-row>
             <b-col xxs="12">
-                <piaf-breadcrumb :heading=" $route.name "></piaf-breadcrumb>
+                <piaf-bread-crumb :heading=" $route.name "></piaf-bread-crumb>
                 <div class="separator mb-5"></div>
             </b-col>
         </b-row>

@@ -13,10 +13,17 @@
 
 <script>
     import TopNav from "./containers/TopNav";
+    import SideBar from './containers/SideBar';
+    import { mapGetters } from 'vuex'
     export default {
         name: "App",
         components: {
-            TopNav
+            TopNav,
+            SideBar
+        },
+
+        computed: {
+            ...mapGetters(['getMenuType'])
         }
 
     }
