@@ -20,6 +20,25 @@ const router = new VueRouter({
                     name: 'Главная',
                 }
             ]
+        },
+        {
+            path: 'app/Dislocation',
+            component: () => import('../views/app/Dislocation'),
+            redirect: '/app/Dislocation/TableRes',
+            children: [
+                {
+                    path: 'VslMap',
+                    component: () => import('../views/app/Dislocation/VslMap'),
+                    name: 'Карта судов ВП'
+                },
+                {
+                    path: 'TableResult',
+                    component: () => import('../views/app/Dislocation/TableRes'),
+                    name: 'Текущая дислокация'
+                }
+            ]
+
+
         }
     ]
 })

@@ -1,22 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\DISL;
 use Illuminate\Http\Request;
-use App\Repositories\DislRDORepository;
 use Illuminate\Support\Facades\DB;
 
-class DislRdo extends Controller
+class DislRdoController extends Controller
 {
-
-    protected $disl2;
-
-    public function __construct(Disl $disl)
-    {
-        $this->disl2 = new DislRDORepository($disl);
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -30,8 +22,25 @@ class DislRdo extends Controller
 
 
 
-        return response()->json($disl,200);
-        $dislRDO = DISL::select('USERNAME', 'CODEFROMOUR', 'CODERSP', 'CODEVSL', 'CODEPRT')->get();
+        //return response()->json($disl,200);
+        $dislRDO = DISL::select(DISL::raw('CASE WHEN DISL$RDO1.LINE = 10 THEN VSL.ABBR ELSE \'\' END AS VSLABBR'),'USERNAME',
+            'DISL$RDO1.CODEFRMOUR', 'DISL$RDO1.CODERSP', 'CODEVSL', 'CODEPRT', 'DATEOPP', 'CODEOPP', 'PRT.ABBR AS PRTABBR',
+            'DISL$RDO1.QTYFUEL', 'DISL$RDO1.QTYFUEL_M', 'DISL$RDO1.QTYFUEL_S', 'DISL$RDO1.QTYFUEL_O', 'DISL$RDO1.QTYOIL',
+            'DISL$RDO1.QTYWATER', 'PRTETS.ABBR AS PRTETSABBR', 'CRG.ABBR AS CRGABBR', 'PLACEVSL', 'STARTDATE', 'STARTDATEOPP',
+            'STOPDATEOPP', 'STOPDATE', 'DATEETS', 'PRTETS.ABBR AS PRTETSABBR', 'CRG.ABBR AS CRGABBR', 'QTYCARGO', 'CODEUNIT',
+            'DATEPLN', 'PRTPLNSTART.ABBR AS PRTPLNSTARTABBR', 'CRGPLN.ABBR AS CRGPLNABBR', 'PRTPLNSTOP.ABBR AS PRTPLNSTOPABBR',
+            DISL::raw('CASE WHEN DISL$RDO1.CODEOPP IN (\'PP\',\'PV\',\'KVG-PP\', \'PPR\', \'PNR\') THEN 0 WHEN DISL$RDO1.CODEOPP = \'\' THEN (ISNULL ((SELECT TOP 1 1 FROM DISL$RDO1 D
+            WHERE D.USERNAME = \'DISL\' AND D.CODEVSL = CODEVSL AND LINE = 10 AND CODEOPP IN (\'PP\', \'PV\', \'KVG-PP\', \'PPR\', \'PNP\')), \'\')) ELSE 1 END AS ORDEROPP')
+            )
+            ->join('VSL', 'DISL$RDO1.CODEVSL', '=', 'VSL.CODE')
+            ->join('PRT', 'DISL$RDO1.CODEPRT', '=', 'PRT.CODE', 'left outer')
+            ->join('PRT AS PRTETS', 'DISL$RDO1.CODEPRTETS', '=', 'PRTETS.CODE', 'left outer')
+            ->join('CRG', 'DISL$RDO1.CODECARGO', '=', 'CRG.CODE', 'LEFT OUTER')
+            ->join('PRT AS PRTPLNSTART', 'DISL$RDO1.CODEPRTSTARTPLN', '=', 'PRTPLNSTART.CODE', 'LEFT OUTER')
+            ->join('CRG AS CRGPLN', 'DISL$RDO1.CODECARGOPLN', '=', 'CRGPLN.CODE', 'LEFT OUTER')
+            ->join('PRT AS PRTPLNSTOP', 'DISL$RDO1.CODEPRTSTOPPLN', '=', 'PRTPLNSTOP.CODE', 'LEFT OUTER')
+            ->where('USERNAME', 'DISL')
+            ->orderBy('ORDEROPP', request('ordering_rule', 'asc'))->get();
 
         return response()->json($dislRDO, 200);
         //SELECT        DISL.USERNAME, DISL.CODEFRMOUR, DISL.CODERSP, DISL.CODEVSL, DISL.CODEPRT, DISL.STARTDATE, DISL.STARTDATEOPP, DISL.STOPDATEOPP, DISL.STOPDATE, DISL.CODEPRTETS, DISL.DATEETS,
@@ -57,18 +66,6 @@ class DislRdo extends Controller
         //                         dbo.VSL WITH (NOLOCK) ON DISL.CODEVSL = dbo.VSL.CODE INNER JOIN
         //                         dbo.FRM WITH (nolock) ON DISL.CODEFRM = dbo.FRM.CODE INNER JOIN
         //                         dbo.RSP WITH (nolock) ON DISL.CODERSP = dbo.RSP.CODE
-
-        //   exec dbo.INITDISLRDO2 @CODEFRMOWN= '''', @CODECORP = '''', @CODERSP = ''ALL'',@CODEVSL0 = '''',@PRTENG = '''',@CODEDB = '''',@CODERSPMNG0 = '''',@ISRSPMNG = 0, @RPTDATE =<DATETIME>,@WITHCC = 0
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -89,17 +86,6 @@ class DislRdo extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }

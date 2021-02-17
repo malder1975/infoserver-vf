@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import VueScrollTo from 'vue-scroll-to'
 
 
+
 import VueAxios from "vue-axios";
 import axios from 'axios'
 //window.Vue = require('vue').default;
@@ -39,6 +40,7 @@ window.Vue = Vue;
 
 Vue.use(BootstrapVue);
 Vue.use(VueScrollTo);
+//Vue.use(FancyGridVue);
 Vue.use(axios, VueAxios);
 
 Vue.component('piaf-bread-crumb', Breadcrumb)
@@ -46,10 +48,13 @@ Vue.component('vue-perfect-scrollbar', vuePerfectScrollbar)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
-new Vue({
-    render: h => h(App),
-    router,
-    store
+const app = new Vue({
+    el: '#app',
+    components: {
+        App
+    },router,
+    store,
+    render: h => h(App)
 
-}).$mount('#app');
+});//.$mount('#app');
 

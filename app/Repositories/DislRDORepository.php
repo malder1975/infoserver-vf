@@ -12,10 +12,10 @@ class DislRDORepository implements DislRDORepositoryInteface
 {
     protected $disl2;
 
-    public function __construct(Disl $disl2)
+  /*  public function __construct(Disl $disl2)
     {
         $this->disl2 = $disl2;
-    }
+    }*/
 
     public function allrsps()
     {
